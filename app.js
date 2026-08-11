@@ -400,21 +400,35 @@ import {
 
   function signedNumber(n) { return n > 0 ? `+${n}` : String(n); }
 
+  function relevantContractTotals(person) {
+    const monthStart = new Date(viewYear, viewMonth, 1, 12);
+    const monthEnd = new Date(viewYear, viewMonth + 1, 0, 12);
+    const totals = [];
+    for (const startYear of [viewYear - 1, viewYear, viewYear + 1]) {
+      const w = contractWindow(person, startYear);
+      if (w.start <= monthEnd && w.end >= monthStart) totals.push(contractTotal(person, startYear));
+    }
+    return totals;
+  }
+
   function renderSummary() {
     const contractBody = $('contractSummaryBody');
-    const contracts = [contractTotal('W', viewYear), contractTotal('P', viewYear)];
-    contractBody.innerHTML = contracts.map((c, i) => {
+    const people = [{ code: 'W', name: 'Will' }, { code: 'P', name: 'Paul' }];
+    const rows = people.flatMap(person =>
+      relevantContractTotals(person.code).map(c => ({ ...c, person }))
+    );
+    contractBody.innerHTML = rows.map(c => {
       const varianceClass = c.variance > 0 ? 'over' : c.variance < 0 ? 'under' : 'even';
       const varianceText = c.completeThroughEnd ? signedNumber(c.variance) : `${signedNumber(c.variance)}*`;
       return `<tr>
-        <th><strong>${i === 0 ? 'Will' : 'Paul'}</strong><span>${c.label.replace(i === 0 ? 'Will ' : 'Paul ','')}</span></th>
+        <th><strong>${c.person.name}</strong><span>${c.label.replace(c.person.name + ' ','')}</span></th>
         <td class="variance ${varianceClass}">${varianceText}</td><td>${c.total}</td><td>${CONTRACTED_DAYS}</td>
       </tr>`;
     }).join('');
-    const incomplete = contracts.some(c => !c.completeThroughEnd);
+    const incomplete = rows.some(c => !c.completeThroughEnd);
     $('contractNote').textContent = incomplete
       ? '* Contract period extends beyond the latest date currently entered, so the over/under figure is provisional. H days count as onboard.'
-      : 'H days count as onboard in each person’s contract-year total. All contract figures are shown in days.';
+      : 'Contract summary follows the month being viewed. If a contract changes part-way through that month, both relevant contract periods are shown. H days count as onboard.';
   }
 
   function downloadFile(filename, content, type) {
