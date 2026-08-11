@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Rotation" />
+  <title>Chief Officer Rotation</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">CHIEF OFFICER</div>
+        <h1>Rotation Planner</h1>
+      </div>
+      <div class="topbar-actions">
+        <div id="syncStatus" class="sync-status offline">Signed out</div>
+        <button id="todayBtn" class="ghost-btn">Today</button>
+      </div>
+    </header>
+
+    <section id="signedInBar" class="signed-in-bar hidden">
+      <span>Signed in: <strong id="signedInEmail"></strong></span>
+      <button id="signOutBtn" class="link-btn">Sign out</button>
+    </section>
+
+    <section id="authPanel" class="panel auth-panel">
+      <div class="eyebrow">SHARED PLANNER</div>
+      <h2>Sign in</h2>
+      <p class="small-note auth-note">Use the Will or Paul account created in Firebase. Both accounts open the same live planner.</p>
+      <label>Email<input id="loginEmail" type="email" autocomplete="username" inputmode="email" /></label>
+      <label>Password<input id="loginPassword" type="password" autocomplete="current-password" /></label>
+      <button id="loginBtn" class="primary-btn auth-button">Sign in</button>
+      <p id="loginError" class="login-error"></p>
+    </section>
+
+    <section class="panel controls-panel">
+      <div class="year-row">
+        <button id="prevYear" class="nav-btn" aria-label="Previous year">‹</button>
+        <button id="yearBtn" class="year-display" aria-label="Choose year"><span id="yearLabel"></span></button>
+        <button id="nextYear" class="nav-btn" aria-label="Next year">›</button>
+      </div>
+      <div id="selectionMessage" class="selection-message">Tap a start date, then an end date.</div>
+      <div class="assign-grid">
+        <button class="assign-btn will" data-code="W">Will</button>
+        <button class="assign-btn paul" data-code="P">Paul</button>
+        <button class="assign-btn handover" data-code="H">H</button>
+        <button class="assign-btn clear" data-code="">Clear</button>
+      </div>
+      <button id="cancelSelection" class="secondary-btn hidden">Cancel selection</button>
+    </section>
+
+    <section class="panel calendar-panel">
+      <div class="month-nav">
+        <button id="prevMonth" class="nav-btn" aria-label="Previous month">‹</button>
+        <h2 id="monthLabel"></h2>
+        <button id="nextMonth" class="nav-btn" aria-label="Next month">›</button>
+      </div>
+      <div class="weekday-row" aria-hidden="true">
+        <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
+      </div>
+      <div id="calendar" class="calendar-grid" role="grid"></div>
+      <div class="legend">
+        <span><i class="dot will-dot"></i>Will</span>
+        <span><i class="dot paul-dot"></i>Paul</span>
+        <span><i class="dot h-dot"></i>Handover</span>
+      </div>
+    </section>
+
+
+    <section class="panel summary-panel">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">SPREADSHEET CALCULATIONS</div>
+          <h2>Contract Year Totals</h2>
+        </div>
+      </div>
+      <div class="contract-table-wrap">
+        <table class="contract-summary">
+          <thead>
+            <tr><th>Person / Period</th><th>Total onboard inc. H/O</th><th>Contracted</th><th>Over / Under</th></tr>
+          </thead>
+          <tbody id="contractSummaryBody"></tbody>
+        </table>
+      </div>
+      <p id="contractNote" class="small-note"></p>
+    </section>
+
+    <section class="panel rotations-panel">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">AUTOMATIC</div>
+          <h2>Rotations</h2>
+        </div>
+        <label class="toggle-label"><input id="allYearsToggle" type="checkbox" /> All years</label>
+      </div>
+      <div class="rotation-header"><span>Person</span><span>Start</span><span>Finish</span><span>Duration</span></div>
+      <div id="rotationList" class="rotation-list"></div>
+    </section>
+
+    <section class="panel data-panel">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">DATA</div>
+          <h2>Backup & Export</h2>
+        </div>
+      </div>
+      <div class="data-actions">
+        <button id="exportBackup" class="secondary-btn">Export backup</button>
+        <button id="importBackupBtn" class="secondary-btn">Import backup</button>
+        <button id="exportCsv" class="secondary-btn">Export rotations CSV</button>
+        <button id="loadSpreadsheetPlan" class="secondary-btn">Reload spreadsheet plan</button>
+        <button id="clearAll" class="danger-btn">Clear all data</button>
+      </div>
+      <input id="importBackupInput" type="file" accept="application/json,.json" hidden />
+      <p class="small-note">The live schedule is shared through Firebase. A local offline copy is also kept on each device. Export a backup periodically.</p>
+    </section>
+
+    <footer>Rotation Planner v5 · Shared Firebase Sync</footer>
+  </main>
+
+  <dialog id="yearDialog">
+    <form method="dialog" class="dialog-card">
+      <h3>Go to year</h3>
+      <input id="yearInput" type="number" min="2000" max="2100" inputmode="numeric" />
+      <div class="dialog-actions">
+        <button value="cancel" class="secondary-btn">Cancel</button>
+        <button id="goYear" value="default" class="primary-btn">Go</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="default-plan.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

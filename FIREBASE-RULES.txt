@@ -1,0 +1,15 @@
+Paste these into Firebase Console > Firestore Database > Rules, then click Publish:
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /rotationPlanner/{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+
+This allows signed-in Firebase Authentication users to read/write the planner.
+Because your app contains no public sign-up screen, only accounts you create in Firebase Authentication can sign in through the planner.
+
+For even tighter security later, rules can be restricted to the exact UIDs of Will and Paul.
