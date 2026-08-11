@@ -224,3 +224,10 @@ body.locked .more-panel { opacity: .48; pointer-events: none; }
   .submenu-section { padding: 13px; }
   .contract-summary { min-width: 540px; }
 }
+
+/* Shared vessel events (read-only in individual planners) */
+.vessel-events-strip { margin: 0 0 10px; display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+.vessel-event-chip { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px; padding: 6px 9px; background: #f8fafc; font-size: 11px; font-weight: 800; white-space: nowrap; }
+.vessel-event-chip i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+.vessel-events-empty { color: var(--muted); font-size: 11px; padding: 5px 1px 8px; }
+.day.has-vessel-event::before { content: ""; position: absolute; left: 5px; right: 5px; top: 3px; height: 3px; border-radius: 3px; background: var(--event-color, #64748b); }

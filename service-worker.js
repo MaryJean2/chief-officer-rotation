@@ -1,4 +1,4 @@
-const CACHE = 'rotation-planner-v7';
+const CACHE = 'chief-officer-rotation-events-v8';
 const ASSETS = ['./','./index.html','./style.css','./app.js','./default-plan.js','./manifest.json','./icons/icon-192.png','./icons/icon-512.png'];
 
 self.addEventListener('install', event => {

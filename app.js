@@ -66,6 +66,46 @@ import {
   const monthsCollection = collection(db, 'rotationPlanner', 'shared', 'months');
   const configRef = doc(db, 'rotationPlanner', 'shared');
 
+  const vesselEventsRef = doc(db, 'vesselEvents', 'shared');
+  let vesselEvents = [];
+  let vesselEventUnsubscribe = null;
+
+  const EVENT_COLORS = {
+    Charter: '#8b5cf6', Crossing: '#0ea5e9', Yard: '#f59e0b', 'Owner Trip': '#10b981', Maintenance: '#64748b', Other: '#64748b'
+  };
+
+  function eventColor(type) { return EVENT_COLORS[type] || EVENT_COLORS.Other; }
+  function eventDate(key) { const [y,m,d] = String(key).split('-').map(Number); return new Date(y,m-1,d,12); }
+  function eventOverlapsDate(event, date) {
+    const k = dateKey(date);
+    return event && event.start <= k && event.end >= k;
+  }
+  function eventForDate(date) { return vesselEvents.find(e => eventOverlapsDate(e, date)) || null; }
+  function eventsForVisibleMonth() {
+    const start = dateKey(new Date(viewYear, viewMonth, 1, 12));
+    const end = dateKey(new Date(viewYear, viewMonth + 1, 0, 12));
+    return vesselEvents.filter(e => e.end >= start && e.start <= end).sort((a,b) => a.start.localeCompare(b.start));
+  }
+  function renderVesselEvents() {
+    const host = $('vesselEventsStrip');
+    if (!host) return;
+    const events = eventsForVisibleMonth();
+    if (!events.length) { host.innerHTML = '<span class="vessel-events-empty">No vessel events this month</span>'; return; }
+    host.innerHTML = events.map(e => {
+      const s = eventDate(e.start), f = eventDate(e.end);
+      const range = e.start === e.end ? formatDM(s) : `${formatDM(s)} → ${formatDM(f)}`;
+      return `<span class="vessel-event-chip" title="${e.type || 'Other'}"><i style="background:${eventColor(e.type)}"></i>${e.title} · ${range}</span>`;
+    }).join('');
+  }
+
+  function startVesselEventSync() {
+    if (vesselEventUnsubscribe) vesselEventUnsubscribe();
+    vesselEventUnsubscribe = onSnapshot(vesselEventsRef, { includeMetadataChanges: true }, snap => {
+      vesselEvents = snap.exists() && Array.isArray(snap.data().events) ? snap.data().events : [];
+      render();
+    }, err => console.error('Vessel event sync', err));
+  }
+
   function loadState() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -140,6 +180,7 @@ import {
   function render() {
     $('yearLabel').textContent = viewYear;
     $('monthLabel').textContent = MONTHS[viewMonth];
+    renderVesselEvents();
     renderCalendar();
     renderRotations();
     renderSummary();
@@ -170,6 +211,8 @@ import {
       cell.setAttribute('role', 'gridcell');
       cell.setAttribute('aria-label', `${day} ${MONTHS[viewMonth]} ${viewYear}${code ? `, ${labelForCode(code)}` : ''}`);
       const hDuration = code === 'H' ? hLabels[key] : '';
+      const vesselEvent = eventForDate(date);
+      if (vesselEvent) { cell.classList.add('has-vessel-event'); cell.style.setProperty('--event-color', eventColor(vesselEvent.type)); cell.title = `${vesselEvent.title} (${vesselEvent.type || 'Other'})`; }
       cell.innerHTML = `<span>${day}</span>${hDuration ? `<span class="h-duration">${hDuration}</span>` : ''}`;
       if (sameDate(date, now)) cell.classList.add('today');
       if (selectionStart && sameDate(date, selectionStart)) cell.classList.add('selected');
@@ -574,11 +617,13 @@ import {
     cloudReady = false;
     setAuthUi(user);
     if (monthUnsubscribe) { monthUnsubscribe(); monthUnsubscribe = null; }
+    if (vesselEventUnsubscribe) { vesselEventUnsubscribe(); vesselEventUnsubscribe = null; }
     if (!user) { render(); return; }
     setSyncStatus('Connecting…', 'pending');
     try {
       await initializeSharedPlannerIfNeeded();
       startRealtimeSync();
+      startVesselEventSync();
     } catch (err) {
       console.error(err);
       setSyncStatus('Sync blocked — check Firestore rules', 'error');
