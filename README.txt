@@ -30,3 +30,7 @@ IMPORTANT
 - Do not press 'Reload spreadsheet plan' unless you intend to replace the shared live schedule for both users.
 - Do not press 'Clear all data' unless you intend to clear the shared live schedule for both users.
 - Export backup remains useful even with cloud sync.
+
+
+V7 DISPLAY CHANGE
+Calendar day cells show only the date and status colour. W/P/H initials are hidden. End-of-rotation H cells still show the compact duration marker such as 6W3.

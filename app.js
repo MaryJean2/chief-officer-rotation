@@ -170,7 +170,7 @@ import {
       cell.setAttribute('role', 'gridcell');
       cell.setAttribute('aria-label', `${day} ${MONTHS[viewMonth]} ${viewYear}${code ? `, ${labelForCode(code)}` : ''}`);
       const hDuration = code === 'H' ? hLabels[key] : '';
-      cell.innerHTML = `<span>${day}</span>${code ? `<span class="code">${code}</span>` : ''}${hDuration ? `<span class="h-duration">${hDuration}</span>` : ''}`;
+      cell.innerHTML = `<span>${day}</span>${hDuration ? `<span class="h-duration">${hDuration}</span>` : ''}`;
       if (sameDate(date, now)) cell.classList.add('today');
       if (selectionStart && sameDate(date, selectionStart)) cell.classList.add('selected');
       if (selectionStart && selectionEnd && date >= minDate(selectionStart, selectionEnd) && date <= maxDate(selectionStart, selectionEnd)) cell.classList.add('range-preview');
