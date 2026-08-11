@@ -1,4 +1,4 @@
-const CACHE = 'rotation-planner-v5';
+const CACHE = 'rotation-planner-v6';
 const ASSETS = ['./','./index.html','./style.css','./app.js','./default-plan.js','./manifest.json','./icons/icon-192.png','./icons/icon-512.png'];
 
 self.addEventListener('install', event => {

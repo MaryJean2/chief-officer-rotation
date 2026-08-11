@@ -84,7 +84,7 @@
       <div class="contract-table-wrap">
         <table class="contract-summary">
           <thead>
-            <tr><th>Person / Period</th><th>Total onboard inc. H/O</th><th>Contracted</th><th>Over / Under</th></tr>
+            <tr><th>Person / Period</th><th>Over / Under</th><th>Total onboard inc. H/O</th><th>Contracted</th></tr>
           </thead>
           <tbody id="contractSummaryBody"></tbody>
         </table>
@@ -92,37 +92,46 @@
       <p id="contractNote" class="small-note"></p>
     </section>
 
-    <section class="panel rotations-panel">
-      <div class="section-heading">
-        <div>
-          <div class="eyebrow">AUTOMATIC</div>
-          <h2>Rotations</h2>
-        </div>
-        <label class="toggle-label"><input id="allYearsToggle" type="checkbox" /> All years</label>
-      </div>
-      <div class="rotation-header"><span>Person</span><span>Start</span><span>Finish</span><span>Duration</span></div>
-      <div id="rotationList" class="rotation-list"></div>
-    </section>
+    <details class="panel more-panel">
+      <summary class="more-button">
+        <span><strong>More</strong><small>Rotations · Backup & Export</small></span>
+        <span class="more-chevron" aria-hidden="true">⌄</span>
+      </summary>
 
-    <section class="panel data-panel">
-      <div class="section-heading">
-        <div>
-          <div class="eyebrow">DATA</div>
-          <h2>Backup & Export</h2>
-        </div>
-      </div>
-      <div class="data-actions">
-        <button id="exportBackup" class="secondary-btn">Export backup</button>
-        <button id="importBackupBtn" class="secondary-btn">Import backup</button>
-        <button id="exportCsv" class="secondary-btn">Export rotations CSV</button>
-        <button id="loadSpreadsheetPlan" class="secondary-btn">Reload spreadsheet plan</button>
-        <button id="clearAll" class="danger-btn">Clear all data</button>
-      </div>
-      <input id="importBackupInput" type="file" accept="application/json,.json" hidden />
-      <p class="small-note">The live schedule is shared through Firebase. A local offline copy is also kept on each device. Export a backup periodically.</p>
-    </section>
+      <div class="more-content">
+        <section class="submenu-section rotations-panel">
+          <div class="section-heading">
+            <div>
+              <div class="eyebrow">AUTOMATIC</div>
+              <h2>Rotations</h2>
+            </div>
+            <label class="toggle-label"><input id="allYearsToggle" type="checkbox" /> All years</label>
+          </div>
+          <div class="rotation-header"><span>Person</span><span>Start</span><span>Finish</span><span>Duration</span></div>
+          <div id="rotationList" class="rotation-list"></div>
+        </section>
 
-    <footer>Rotation Planner v5 · Shared Firebase Sync</footer>
+        <section class="submenu-section data-panel">
+          <div class="section-heading">
+            <div>
+              <div class="eyebrow">DATA</div>
+              <h2>Backup & Export</h2>
+            </div>
+          </div>
+          <div class="data-actions">
+            <button id="exportBackup" class="secondary-btn">Export backup</button>
+            <button id="importBackupBtn" class="secondary-btn">Import backup</button>
+            <button id="exportCsv" class="secondary-btn">Export rotations CSV</button>
+            <button id="loadSpreadsheetPlan" class="secondary-btn">Reload spreadsheet plan</button>
+            <button id="clearAll" class="danger-btn">Clear all data</button>
+          </div>
+          <input id="importBackupInput" type="file" accept="application/json,.json" hidden />
+          <p class="small-note">The live schedule is shared through Firebase. A local offline copy is also kept on each device. Export a backup periodically.</p>
+        </section>
+      </div>
+    </details>
+
+    <footer>Rotation Planner v6 · Shared Firebase Sync</footer>
   </main>
 
   <dialog id="yearDialog">

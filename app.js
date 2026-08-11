@@ -365,7 +365,7 @@ import {
       const varianceText = c.completeThroughEnd ? signedNumber(c.variance) : `${signedNumber(c.variance)}*`;
       return `<tr>
         <th><strong>${i === 0 ? 'Will' : 'Paul'}</strong><span>${c.label.replace(i === 0 ? 'Will ' : 'Paul ','')}</span></th>
-        <td>${c.total}</td><td>${CONTRACTED_DAYS}</td><td class="variance ${varianceClass}">${varianceText}</td>
+        <td class="variance ${varianceClass}">${varianceText}</td><td>${c.total}</td><td>${CONTRACTED_DAYS}</td>
       </tr>`;
     }).join('');
     const incomplete = contracts.some(c => !c.completeThroughEnd);
@@ -383,7 +383,7 @@ import {
   }
 
   function exportBackup() {
-    const payload = { app: 'Chief Officer Rotation Planner', version: 5, exportedAt: new Date().toISOString(), days: state.days };
+    const payload = { app: 'Chief Officer Rotation Planner', version: 6, exportedAt: new Date().toISOString(), days: state.days };
     downloadFile(`rotation-backup-${dateKey(new Date())}.json`, JSON.stringify(payload, null, 2), 'application/json');
   }
 
